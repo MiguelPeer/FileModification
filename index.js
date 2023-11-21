@@ -1,26 +1,74 @@
-const fs = require("fs").promises;
+const buttonSelectFileElement = document.getElementById("btn-select-file");
+const inputFileElement = document.getElementById("file-selector");
+const downloadButtonElement = document.getElementById("btn-download-files");
 
-const readTxts = async () => {
-  try {
-    const dir = "./SpedsTxt";
-    const files = await fs.readdir(dir, "utf8");
+let filesToDownload = [];
 
-    files.forEach(async (path) => {
-      const fullPath = `${dir}/${path}`; // -> "./txts/TESTESPED.tsx"
-      const file = await fs.readFile(fullPath, "utf-8");
-      const fileRows = file.split("\n");
+function reset() {
+  filesToDownload = [];
+  buttonSelectFileElement.className = "visible";
+  downloadButtonElement.className = "hidden";
+}
 
+function downloadFiles() {
+  if (filesToDownload.length > 1) {
+    var zip = new JSZip();
+
+    filesToDownload.forEach((fileToDownload) => {
+      const newFile = new Blob([fileToDownload.file], { type: "text/plain" });
+
+      zip.file(
+        `${fileToDownload.filename.replace(".txt", "")}_corrigido.txt`,
+        newFile
+      );
+    });
+
+    zip.generateAsync({ type: "blob" }).then(function (content) {
+      var url = URL.createObjectURL(content);
+
+      var link = document.createElement("a");
+      link.href = url;
+      link.download = "arquivos_corrigidos.zip";
+
+      document.body.appendChild(link);
+      link.click();
+
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    });
+  } else {
+    const fileToDownload = filesToDownload[0];
+    const newFile = new Blob([fileToDownload.file], { type: "text/plain" });
+
+    const link = document.createElement("a");
+    link.href = window.URL.createObjectURL(newFile);
+    link.download = `${fileToDownload.filename.replace(
+      ".txt",
+      ""
+    )}_corrigido.txt`;
+    link.click();
+  }
+
+  reset();
+}
+
+downloadButtonElement.addEventListener("click", () => {
+  downloadFiles();
+});
+
+function fixFiles(files) {
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+      let fileData = e.target.result;
+
+      const fileRows = fileData.split("\n");
       const d100 = "D100";
       const d190 = "D190";
 
       const newArr = [];
-
-      const cianoColor = "\x1b[33m";
-      const texto = "%s";
-      const reset = "\x1b[0m";
-      const optionsTitle = `${cianoColor}${texto}${reset}`;
-
-      console.log(optionsTitle, `\n Alterações do Arquivo '${path}': \n`);
 
       for (let i = 0; i < fileRows.length; i++) {
         const row = fileRows[i];
@@ -41,11 +89,6 @@ const readTxts = async () => {
           const baseCalculation = noteRowArray[19];
 
           if (baseCalculation !== "0") {
-            const noteColumn15 = noteRowArray[15];
-            const noteColumn18 = noteRowArray[18];
-            const impColumn5 = impRowArray[5];
-            const impColumn6 = impRowArray[6];
-
             // change noteRow -> 18 -> 15
             noteRowArray[15] = baseCalculation;
             noteRowArray[18] = baseCalculation;
@@ -60,48 +103,39 @@ const readTxts = async () => {
 
             newArr[i] = newNoteRow;
             newArr[i + 1] = newImpRow;
-
-            if (
-              noteColumn15 !== baseCalculation ||
-              noteColumn18 !== baseCalculation ||
-              impColumn5 !== baseCalculation ||
-              impColumn6 !== baseCalculation
-            ) {
-              const oldColor = "\x1b[41m";
-              const changedColor = "\x1b[42m";
-              const texto = "%s";
-              const reset = "\x1b[0m";
-              const optionsOld = `${oldColor}${texto}${reset}`;
-              const optionsChanged = `${changedColor}${texto}${reset}`;
-
-              console.log(optionsOld, `${i + 1} - ${noteRow}`);
-              console.log(optionsOld, `${i + 2} - ${impRow}`);
-              console.log(optionsChanged, `${i + 1} + ${newNoteRow}`);
-              console.log(optionsChanged, `${i + 2} + ${newImpRow}`);
-              console.log("\n")
-            }
           } else {
             newArr[i] = row;
             newArr[i + 1] = impRow;
           }
         } else if (
-          (!rowIsD190 && !previousRowIsD100) ||
-          (rowIsD100 && previousRowIsD100) ||
-          (rowIsD100 && nextRowIsD100) ||
-          (!rowIsD100 && !nextRowIsD100)
+          ((!rowIsD190 && !previousRowIsD100) ||
+            (rowIsD100 && previousRowIsD100) ||
+            (rowIsD100 && nextRowIsD100) ||
+            (!rowIsD100 && !nextRowIsD100)) &&
+          !(rowIsD190 && !nextRowIsD100)
         ) {
           newArr.push(row);
         }
       }
 
       const fileUpdate = newArr.join("\n");
-      await fs.writeFile(fullPath, fileUpdate);
-    });
+      filesToDownload.push({ file: fileUpdate, filename: file.name });
+    };
 
-    console.log("Sistema executado com sucesso! \n");
-  } catch (error) {
-    console.error("Failed: ", error);
+    reader.readAsText(file);
   }
-};
 
-readTxts();
+  buttonSelectFileElement.className = "hidden";
+  downloadButtonElement.className = "visible";
+}
+
+buttonSelectFileElement.addEventListener("click", () => {
+  inputFileElement.click();
+});
+
+inputFileElement.addEventListener("change", async (e) => {
+  const files = e.target.files;
+  if (files.length <= 0) return;
+
+  fixFiles(files);
+});

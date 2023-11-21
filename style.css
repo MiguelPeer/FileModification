@@ -1,13 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap');
-
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Open Sans", sans-serif;
   list-style: none;
   text-decoration: none;
+}
+
+button {
+  cursor: pointer;
 }
 
 .vant {
@@ -16,7 +17,7 @@
   gap: 15px;
 }
 
-h2{
+h2 {
   font-family: Bebas Neue;
   font-size: 40px;
   font-style: normal;
@@ -26,14 +27,14 @@ h2{
   color: #fff;
 }
 
-.logo img{
+.logo img {
   width: 80px;
   height: 80px;
   object-fit: cover;
   border-radius: 50px;
-}       
+}
 
-header{
+header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -44,7 +45,7 @@ header{
   transition: all 0.5s;
 }
 
-ul{
+ul {
   display: flex;
   align-items: center;
   gap: 30px;
@@ -58,44 +59,67 @@ li a {
   display: flex;
   align-items: center;
   flex-direction: column;
+
+  padding: 20px 0px;
 }
 
-.container h1{
-  color:  black;
-  font-family: Roboto;
-  font-size: 40px;
+.container h1 {
+  font-size: 34px;
+  color: black;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
 }
 
-.container h3{
-  color: #000;
+.container h3 {
+  color: #404040;
   font-family: Roboto;
-  font-size: 30px;
+  font-size: 25px;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
 }
 
-.container .conteudo input{
+.container .content input {
   opacity: 0;
   visibility: hidden;
   height: 0px;
   width: 0px;
 }
 
-.container .conteudo button{
+.content {
   display: flex;
-  width: 300px;
-  padding: 25px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.container .content button {
+  display: flex;
+  padding: 8px 30px;
+
   justify-content: center;
   align-items: center;
   gap: 25.119px;
   border-radius: 11px;
   background: black;
   color: #fff;
-  font-family: Roboto;
   font-size: 20px;
   margin: 0 auto;
+  margin-tio: 8px;
+}
+
+.visible {
+  width: auto;
+  height: auto;
+  opacity: 1;
+  visibility: visible;
+}
+
+.hidden {
+  width: 0px;
+  height: 0px;
+  opacity: 0;
+  visibility: hidden;
 }
