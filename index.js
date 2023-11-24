@@ -76,15 +76,15 @@ function fixFiles(files) {
         const nextRow = fileRows[i + 1];
 
         const previousRowIsD100 = previousRow?.split("|")[1] === d100;
-        const rowIsD100 = row?.split("|")[1] === d100; // |D100|.split("|") -> ["", "D100", ]
+        const rowIsD100 = row?.split("|")[1] === d100; 
         const rowIsD190 = row?.split("|")[1] === d190;
         const nextRowIsD100 = nextRow?.split("|")[1] === d100;
         const nextRowIsD190 = nextRow?.split("|")[1] === d190;
 
         if (rowIsD100 && nextRowIsD190) {
-          const noteRow = row; // |D100|1|0|SA1C0190001|57|00|0||549|12230904884082002855570000000005491000005490|12092023|12092023|0||41,67|0|9|41,67|41,67|5|0||311010000000001|1200401|2910727|
+          const noteRow = row; 
           const impRow = nextRow;
-          const noteRowArray = noteRow.split("|"); // ["D100", "", "0", "SA1C0190001", ...]
+          const noteRowArray = noteRow.split("|"); 
           const impRowArray = impRow.split("|");
           const baseCalculation = noteRowArray[19];
 
